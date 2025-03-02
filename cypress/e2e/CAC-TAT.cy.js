@@ -161,5 +161,71 @@ describe('Central de Atendimento ao Cliente TAT', () => {
       .should('be.visible')
   })
 
+  it('A12E1 - Verifica se a mensagem de erro exibida ao submeter o formulário sem preencher os campos obrigatórios realmente dura 3 segundos.', () => {
+    cy.clock()
+    cy.contains('button', 'Enviar').click()
+    cy.get('.error').should('be.visible')
+    cy.tick(3000)
+    cy.get('.error').should('not.be.visible')
+  })
+
+  Cypress._.times(5, () => {
+    it('A12E2 - Verifica se a mensagem de erro exibida ao submeter o formulário sem preencher os campos obrigatórios realmente dura 3 segundos.', () => {
+      cy.clock()
+      cy.contains('button', 'Enviar').click()
+      cy.get('.error').should('be.visible')
+      cy.tick(3000)
+      cy.get('.error').should('not.be.visible')
+    })
+  })
+
+  it('A12E3 - Exibe e oculta as mensagens de sucesso e erro usando .invoke().', () => {
+    cy.get('.success')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Mensagem enviada com sucesso.')
+      .invoke('hide')
+      .should('not.be.visible')
+      
+    cy.get('.error')
+      .should('not.be.visible')
+      .invoke('show')
+      .should('be.visible')
+      .and('contain', 'Valide os campos obrigatórios!')
+      .invoke('hide')
+      .should('not.be.visible')
+  })
+
+  it('A12E3 - Preenche o campo da área de texto usando o comando invoke.', () => {
+    cy.get('#open-text-area')
+      .invoke('val', 'Um texto qualquer.')
+      .should('have.value', 'Um texto qualquer.')
+  })
+
+  it('A12E4 - Faz uma requisição HTTP.', () => {
+    cy.request('https://cac-tat-v3.s3.eu-central-1.amazonaws.com/index.html')
+      .as('getRequest')
+      .its('status')
+      .should('be.equal', 200)
+
+    cy.get('@getRequest')
+      .its('statusText')
+      .should('be.equal', 'OK')
+
+    cy.get('@getRequest')
+        .its('body')
+        .should('include', 'CAC TAT')
+  })
+
+  it('DESAFIO - Achar o gato.', () => {
+    cy.get('#cat')
+      .invoke('show')
+      .should('be.visible')
+    cy.get('#title')
+      .invoke('text', 'CAT TAT')
+    cy.get('#subtitle')
+      .invoke('text', 'Eu amo gatos S2.')
+  })
 
 })
